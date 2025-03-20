@@ -1,0 +1,236 @@
+{load_file("nrngui.hoc")}
+objectvar save_window_, rvp_
+objectvar scene_vector_[6]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+{pwman_place(0,0,0)}
+
+//Begin PointProcessManager
+{
+load_file("pointman.hoc")
+}
+{
+soma ocbox_ = new PointProcessManager(0)
+}
+{object_push(ocbox_)}
+{
+mt.select("NIClamp") i = mt.selected()
+ms[i] = new MechanismStandard("NIClamp")
+ms[i].set("del", 100, 0)
+ms[i].set("dur", 1, 0)
+ms[i].set("amp", 2, 0)
+ms[i].set("del1", 1000, 0)
+ms[i].set("n", 100, 0)
+mt.select("NIClamp") i = mt.selected() maction(i)
+hoc_ac_ = 0.5
+sec.sec move() d1.flip_to(0)
+}
+{object_pop() doNotify()}
+{
+ocbox_ = ocbox_.v1
+ocbox_.map("PointProcessManager", 450, 0, 200, 200)
+}
+objref ocbox_
+//End PointProcessManager
+
+
+//Begin Insert/Remove Mechanisms
+{
+load_file("inserter.hoc", "Inserter")
+}
+{
+soma ocbox_ = new Inserter(0)
+}
+{object_push(ocbox_)}
+{
+mt.select("pas") i = mt.selected()
+ms[i] = new MechanismStandard("pas")
+ms[i].set("g_pas", 0.001, 0)
+ms[i].set("e_pas", -70, 0)
+mstate[i]= 0
+mt.select("hh") i = mt.selected()
+ms[i] = new MechanismStandard("hh")
+ms[i].set("gnabar_hh", 0.12, 0)
+ms[i].set("gkbar_hh", 0.036, 0)
+ms[i].set("gl_hh", 0.0003, 0)
+ms[i].set("el_hh", -54.3, 0)
+mstate[i]= 0
+mt.select("Cadynam") i = mt.selected()
+ms[i] = new MechanismStandard("Cadynam")
+mstate[i]= 1
+maction(i)
+mt.select("IK1") i = mt.selected()
+ms[i] = new MechanismStandard("IK1")
+ms[i].set("gK1_IK1", 0.00035, 0)
+mstate[i]= 1
+maction(i)
+mt.select("INa") i = mt.selected()
+ms[i] = new MechanismStandard("INa")
+ms[i].set("gnabar_INa", 0.004, 0)
+ms[i].set("gnac_INa", 3e-06, 0)
+ms[i].set("Tauact_INa", 1, 0)
+ms[i].set("Tauinactf_INa", 1, 0)
+ms[i].set("Tauinacts_INa", 1, 0)
+mstate[i]= 1
+maction(i)
+mt.select("Is") i = mt.selected()
+ms[i] = new MechanismStandard("Is")
+ms[i].set("gsbar_Is", 5e-05, 0)
+mstate[i]= 1
+maction(i)
+mt.select("IKx1") i = mt.selected()
+ms[i] = new MechanismStandard("IKx1")
+ms[i].set("gx1_IKx1", 0.0008, 0)
+ms[i].set("Tauact_IKx1", 1, 0)
+mstate[i]= 1
+maction(i)
+mt.select("K_acc") i = mt.selected()
+ms[i] = new MechanismStandard("K_acc")
+ms[i].set("Vi_K_acc", 1.3668e-08, 0)
+ms[i].set("ik_K_acc", 0.000445123, 0)
+ms[i].set("Kneutral_K_acc", 3e-05, 0)
+mstate[i]= 1
+maction(i)
+mt.select("Na_acc") i = mt.selected()
+ms[i] = new MechanismStandard("Na_acc")
+ms[i].set("Naneutral_Na_acc", 3e-05, 0)
+ms[i].set("Vi_Na_acc", 1.3668e-08, 0)
+mstate[i]= 1
+maction(i)
+}
+{object_pop() doNotify()}
+{
+ocbox_ = ocbox_.v1
+ocbox_.map("Insert/Remove Mechanisms", 300, 0, 100, 160)
+}
+objref ocbox_
+//End Insert/Remove Mechanisms
+
+{
+xpanel("ca_ion (Globals)", 0)
+cai0_ca_ion = 1e-07
+xvalue("cai0_ca_ion","cai0_ca_ion", 1,"", 0, 0 )
+cao0_ca_ion = 1.8
+xvalue("cao0_ca_ion","cao0_ca_ion", 1,"", 0, 0 )
+xpanel(800,0)
+}
+{
+xpanel("k_ion (Globals)", 0)
+ki0_k_ion = 141.59
+xvalue("ki0_k_ion","ki0_k_ion", 1,"", 0, 0 )
+ko0_k_ion = 5.4
+xvalue("ko0_k_ion","ko0_k_ion", 1,"", 0, 0 )
+xpanel(800,100)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,5600,-100,40)
+scene_vector_[3] = save_window_
+{save_window_.view(0, -100, 5600, 140, 0, 606, 1026, 203.5)}
+graphList[0].append(save_window_)
+save_window_.save_name("graphList[0].")
+save_window_.addexpr("v(.5)", 2, 1, 0.8, 0.9, 2)
+}
+{
+xpanel("na_ion (Globals)", 0)
+nai0_na_ion = 20
+xvalue("nai0_na_ion","nai0_na_ion", 1,"", 0, 0 )
+nao0_na_ion = 140
+xvalue("nao0_na_ion","nao0_na_ion", 1,"", 0, 0 )
+xpanel(800,200)
+}
+{
+xpanel("soma(0 - 1) (Parameters)", 0)
+xlabel("soma(0 - 1) (Parameters)")
+xlabel("nseg = 1")
+soma.L = 100
+xvalue("L","soma.L", 1,"define_shape()", 0, 0 )
+soma.diam = 16
+xvalue("diam","soma.diam", 1,"", 0, 0 )
+soma.cm = 1
+xvalue("cm","soma.cm", 1,"", 0, 0 )
+xpanel(650,0)
+}
+{
+xpanel("RunControl", 0)
+v_init = -75
+xvalue("Init","v_init", 1,"stdinit()", 1, 1 )
+xbutton("Init & Run","run()")
+xbutton("Stop","stoprun=1")
+runStopAt = 5
+xvalue("Continue til","runStopAt", 1,"{continuerun(runStopAt) stoprun=1}", 1, 1 )
+runStopIn = 1000
+xvalue("Continue for","runStopIn", 1,"{continuerun(t + runStopIn) stoprun=1}", 1, 1 )
+xbutton("Single Step","steprun()")
+t = 5600
+xvalue("t","t", 2 )
+tstop = 5600
+xvalue("Tstop","tstop", 1,"tstop_changed()", 0, 1 )
+dt = 26.6033
+xvalue("dt","dt", 1,"setdt()", 0, 1 )
+steps_per_ms = 1
+xvalue("Points plotted/ms","steps_per_ms", 1,"setdt()", 0, 1 )
+xcheckbox("Quiet",&stdrun_quiet,"")
+realtime = 0.45
+xvalue("Real Time","realtime", 0,"", 0, 1 )
+xpanel(0,100)
+}
+
+{
+xpanel("soma(0 - 1) (Parameters)", 0)
+xlabel("soma(0 - 1) (Parameters)")
+xlabel("nseg = 1")
+soma.L = 100
+xvalue("L","soma.L", 1,"define_shape()", 0, 0 )
+soma.diam = 16
+xvalue("diam","soma.diam", 1,"", 0, 0 )
+soma.cm = 1
+xvalue("cm","soma.cm", 1,"", 0, 0 )
+soma.gK1_IK1 = 0.00035
+xvalue("gK1_IK1","soma.gK1_IK1", 1,"", 0, 0 )
+soma.gnabar_INa = 0.004
+xvalue("gnabar_INa","soma.gnabar_INa", 1,"", 0, 0 )
+soma.gnac_INa = 3e-06
+xvalue("gnac_INa","soma.gnac_INa", 1,"", 0, 0 )
+soma.Tauact_INa = 1
+xvalue("Tauact_INa","soma.Tauact_INa", 1,"", 0, 0 )
+soma.Tauinactf_INa = 1
+xvalue("Tauinactf_INa","soma.Tauinactf_INa", 1,"", 0, 0 )
+soma.Tauinacts_INa = 1
+xvalue("Tauinacts_INa","soma.Tauinacts_INa", 1,"", 0, 0 )
+soma.ena = 51.8691
+xvalue("ena","soma.ena", 1,"", 0, 0 )
+soma.gsbar_Is = 5e-05
+xvalue("gsbar_Is","soma.gsbar_Is", 1,"", 0, 0 )
+soma.gx1_IKx1 = 0.0008
+xvalue("gx1_IKx1","soma.gx1_IKx1", 1,"", 0, 0 )
+soma.Tauact_IKx1 = 1
+xvalue("Tauact_IKx1","soma.Tauact_IKx1", 1,"", 0, 0 )
+soma.ek = -87.2343
+xvalue("ek","soma.ek", 1,"", 0, 0 )
+xpanel(1000,0)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(4000,4600,0,1)
+scene_vector_[4] = save_window_
+{save_window_.view(4000, 0, 600, 1, 722, 268, 300.6, 200.8)}
+graphList[2].append(save_window_)
+save_window_.save_name("graphList[2].")
+save_window_.addvar("soma.m_INa( 0.5 )", 2, 1, 0.8, 0.9, 2)
+save_window_.addvar("soma.n_INa( 0.5 )", 1, 1, 0.8, 0.9, 2)
+save_window_.addvar("soma.h_INa( 0.5 )", 3, 1, 0.8, 0.9, 2)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(4000,4600,0,1)
+scene_vector_[5] = save_window_
+{save_window_.view(4000, 0, 600, 1, 301, 267, 300.6, 200.8)}
+graphList[2].append(save_window_)
+save_window_.save_name("graphList[2].")
+save_window_.addvar("soma.n_Is( 0.5 )", 3, 1, 0.8, 0.9, 2)
+save_window_.addvar("soma.m_IKx1( 0.5 )", 2, 1, 0.8, 0.9, 2)
+save_window_.addvar("soma.m_Is( 0.5 )", 1, 1, 0.8, 0.9, 2)
+}
+objectvar scene_vector_[1]
+{doNotify()}
